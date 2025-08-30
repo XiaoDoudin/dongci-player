@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dongci Player - AI音乐新体验！</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#9D50BB',
+                        secondary: '#6E48AA',
+                        accent: '#D6A2E8',
+                        light: '#F8F5FC',
+                        dark: '#2D2B55'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .circle-animation {
+                animation: pulse 3s infinite ease-in-out;
+            }
+            .gradient-bg {
+                background: linear-gradient(135deg, #9D50BB 0%, #6E48AA 100%);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+        }
+        
+        .circle {
+            border-radius: 50%;
+            position: absolute;
+            background: rgba(157, 80, 187, var(--opacity));
+            z-index: 0;
+        }
+    </style>
+</head>
+<body class="bg-white font-sans text-gray-800 overflow-x-hidden">
+    <!-- 背景装饰圆环 -->
+    <div class="circle" style="--opacity: 0.1; width: 600px; height: 600px; top: -200px; left: -100px;"></div>
+    <div class="circle" style="--opacity: 0.05; width: 400px; height: 400px; top: 300px; right: -150px;"></div>
+    <div class="circle" style="--opacity: 0.08; width: 300px; height: 300px; bottom: -100px; left: 200px;"></div>
+    
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-50 transition-all duration-300 shadow-sm">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center">
+                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="130" height="130" viewBox="0,0,259.62048,259.62048" class="transform -translate-x-[0px] -translate-y-[0px]">
+                        <g transform="translate(-110.18976,-50.18976)">
+                            <g stroke-miterlimit="10">
+                                <g>
+                                    <g fill="none" stroke="#ffffff" stroke-width="50" stroke-linecap="round">
+                                        <path d="M135.18976,75.18976v209.62048"/>
+                                        <path d="M135.18976,284.81024h209.62048"/>
+                                        <g>
+                                            <path d="M344.81024,284.81024v-209.62048"/>
+                                            <path d="M344.81024,75.18976h-209.62048"/>
+                                        </g>
+                                    </g>
+                                    <path d="M132.98323,287.01677v-214.03354h214.03354v214.03354z" fill="#ffffff" stroke="none" stroke-width="0" stroke-linecap="butt"/>
+                                </g>
+                                <g fill="none" stroke-opacity="0.4" stroke="#f5c9ff" stroke-width="12.5" stroke-linecap="round">
+                                    <path d="M238.57022,209.83587v-54.69909"/>
+                                    <path d="M264.11455,225.16819v-85.36373"/>
+                                    <path d="M290.99405,233.45593v-106.91186"/>
+                                    <path d="M317.35739,241.74367v-123.48734"/>
+                                    <path d="M214.21141,194.91793v-29.83587"/>
+                                    <path d="M189.12974,229.72645v-94.48025"/>
+                                    <path d="M162.64261,202.3769v-39.78116"/>
+                                </g>
+                                <g fill="none" stroke="#ea8aff" stroke-width="10">
+                                    <g>
+                                        <path d="M296.91115,108.61672l-19.75636,5.48788c0,0 1.41774,17.39847 -0.34963,23.68246c-0.75308,2.67762 -4.3857,5.80517 -7.7508,8.21945c-3.20539,2.2997 -6.16804,3.95221 -6.16804,3.95221" stroke-linecap="round"/>
+                                        <path d="M238.11003,174.73501c0,-13.68356 11.09272,-24.77628 24.77628,-24.77628c13.68356,0 24.77628,11.09272 24.77628,24.77628c0,13.68356 -11.09272,24.77628 -24.77628,24.77628c-13.68356,0 -24.77628,-11.09272 -24.77628,-24.77628z" stroke-linecap="butt"/>
+                                    </g>
+                                    <path d="M276.7174,209.01299c-6.29788,12.82961 -19.49178,21.66108 -34.74838,21.66108c-21.36592,0 -38.68642,-17.3205 -38.68642,-38.68642c0,-16.99218 10.95507,-31.42566 26.18763,-36.62286" stroke-linecap="butt"/>
+                                    <path d="M296.91115,217.8091c-9.76157,19.88561 -30.21183,33.57419 -53.85922,33.57419c-33.1167,0 -59.96309,-26.84639 -59.96309,-59.96309c0,-26.3375 16.98012,-48.70907 40.59025,-56.76462" stroke-linecap="butt"/>
+                                </g>
+                            </g>
+                        </g>
+                    </svg>
+                </div>
+                <span class="text-2xl font-bold text-dark">Dongci <span class="text-primary">player</span></span>
+            </div>
+            
+            <a href="#download" class="hidden md:inline-flex items-center bg-primary hover:bg-secondary text-white px-6 py-2 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                <i class="fa fa-download mr-2"></i> 下载
+            </a>
+            
+            <button class="md:hidden text-primary text-2xl">
+                <i class="fa fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+    
+    <!-- 英雄区域 -->
+    <header class="pt-32 pb-20 relative overflow-hidden">
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="max-w-3xl mx-auto text-center">
+                <h1 class="text-[clamp(2.5rem,5vw,4rem)] font-bold mb-6 text-dark leading-tight">
+                    Dongci <span class="text-primary">player</span>
+                </h1>
+                <p class="text-[clamp(1.2rem,3vw,1.5rem)] text-gray-600 mb-8">
+                    接入Deepseek，开始AI音乐之旅
+                </p>
+                <p class="text-lg text-gray-500 mb-10">
+                    在线听，音源超多，音质超高，完全免费 <i class="fa fa-music text-primary"></i>
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="#download" class="flex items-center justify-center bg-primary hover:bg-secondary text-white px-8 py-4 rounded-full text-lg font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                        <i class="fa fa-download mr-2"></i> 立即下载
+                    </a>
+                    <a href="#features" class="flex items-center justify-center bg-white border-2 border-primary text-primary hover:bg-light px-8 py-4 rounded-full text-lg font-medium transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1">
+                        <i class="fa fa-info-circle mr-2"></i> 了解更多
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 装饰性音乐波形 -->
+        <div class="absolute bottom-0 left-0 right-0 h-32 flex items-end justify-center gap-1 opacity-30">
+            <div class="w-3 bg-primary rounded-t-full" style="height: 40%"></div>
+            <div class="w-3 bg-primary rounded-t-full" style="height: 70%"></div>
+            <div class="w-3 bg-primary rounded-t-full" style="height: 50%"></div>
+            <div class="w-3 bg-primary rounded-t-full" style="height: 90%"></div>
+            <div class="w-3 bg-primary rounded-t-full" style="height: 60%"></div>
+            <div class="w-3 bg-primary rounded-t-full" style="height: 80%"></div>
+            <div class="w-3 bg-primary rounded-t-full" style="height: 40%"></div>
+            <div class="w-3 bg-primary rounded-t-full" style="height: 60%"></div>
+            <div class="w-3 bg-primary rounded-t-full" style="height: 30%"></div>
+            <div class="w-3 bg-primary rounded-t-full" style="height: 70%"></div>
+            <div class="w-3 bg-primary rounded-t-full" style="height: 50%"></div>
+            <div class="w-3 bg-primary rounded-t-full" style="height: 90%"></div>
+            <div class="w-3 bg-primary rounded-t-full" style="height: 40%"></div>
+            <div class="w-3 bg-primary rounded-t-full" style="height: 60%"></div>
+        </div>
+    </header>
+    
+    <!-- 最新版本区域 -->
+    <section class="py-16 bg-light relative">
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="max-w-6xl mx-auto">
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div class="bg-white p-8 rounded-2xl shadow-xl transform transition-all duration-500 hover:shadow-2xl hover:-translate-y-1">
+                        <h2 class="text-2xl md:text-3xl font-bold mb-4 text-dark">全新的Dongciplayer现已可用！</h2>
+                        <p class="text-gray-600 mb-6">获取最新的动次版本，体验AI音乐的魅力</p>
+                        <a href="#download" class="inline-block bg-primary hover:bg-secondary text-white px-6 py-3 rounded-full transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                            了解并获取
+                        </a>
+                    </div>
+                    
+                    <div class="bg-white p-8 rounded-2xl shadow-xl transform transition-all duration-500 hover:shadow-2xl hover:-translate-y-1">
+                        <h3 class="text-xl md:text-2xl font-semibold mb-4 text-dark">关于Dongci player</h3>
+                        <p class="text-gray-600 mb-4">
+                            Dongci player是一款非盈利性的在线音乐播放器，致力于让每个人都可以听到最高音质、最好、最新的音乐。
+                        </p>
+                        <p class="text-gray-600">
+                            任何内容完全免费，超级稳定！（除了BUG有点多）希望它可以帮助到你！
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 亮点特性区域 -->
+    <section id="features" class="py-20 relative">
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="text-center mb-16">
+                <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary mb-4">
+                    <i class="fa fa-star text-xl"></i>
+                </div>
+                <h2 class="text-3xl md:text-4xl font-bold mb-4 text-dark">Dongci player，亮点超群！</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">
+                    汇聚多项创新功能，打造极致音乐体验
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- 特性2 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                        <i class="fa fa-download text-primary text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3 text-dark">音乐下载</h3>
+                    <p class="text-gray-600">
+                        可以下载完整版本的音乐，避免因为版权问题变灰，随时随地享受喜爱的音乐。
+                    </p>
+                </div>
+                
+                <!-- 特性3 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                        <i class="fa fa-music text-primary text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3 text-dark">多平台音源</h3>
+                    <p class="text-gray-600">
+                        所有音乐免费听，支持网易云、QQ音乐的音源，未来将支持酷狗音乐，一站式获取海量音乐。
+                    </p>
+                </div>
+                
+                <!-- 特性4 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                        <i class="fa fa-volume-up text-primary text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3 text-dark">超高音质</h3>
+                    <p class="text-gray-600">
+                        音质超高，支持臻品母带、杜比音效等高品质音频，带来身临其境的听觉享受。
+                    </p>
+                </div>
+                
+                <!-- 特性5 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                        <i class="fa fa-sliders text-primary text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3 text-dark">专业音效</h3>
+                    <p class="text-gray-600">
+                        自研音效，双线程播放，未来将支持10段均衡器、环境模拟、人声分离、AI演唱等高级功能。
+                    </p>
+                </div>
+                
+                <!-- 特性6 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                        <i class="fa fa-rocket text-primary text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3 text-dark">持续更新</h3>
+                    <p class="text-gray-600">
+                        持久支持，完全免费，更新快速，新歌热歌老歌样样都有，满足你的各种音乐需求。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 优势区域 -->
+    <section class="py-20 bg-gradient-to-b from-light to-white relative">
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
+                <div class="p-8 md:p-12">
+                    <h2 class="text-3xl font-bold mb-6 text-dark">免费免登录，速度还快又稳定</h2>
+                    
+                    <div class="space-y-6">
+                        <p class="text-gray-600 text-lg">
+                            整个软件找不到一个付费按钮，你只需填你的昵称就可以畅游动次！
+                        </p>
+                        
+                        <p class="text-gray-600 text-lg">
+                            服务器响应巨快，软件十分稳定，后台播放音乐的占用对比其他音乐播放器显著减少！
+                        </p>
+                        
+                        <div class="mt-8 flex flex-wrap gap-4">
+                            <div class="flex items-center bg-primary/10 text-primary px-4 py-2 rounded-full">
+                                <i class="fa fa-check-circle mr-2"></i> 完全免费
+                            </div>
+                            <div class="flex items-center bg-primary/10 text-primary px-4 py-2 rounded-full">
+                                <i class="fa fa-check-circle mr-2"></i> 无需登录
+                            </div>
+                            <div class="flex items-center bg-primary/10 text-primary px-4 py-2 rounded-full">
+                                <i class="fa fa-check-circle mr-2"></i> 快速响应
+                            </div>
+                            <div class="flex items-center bg-primary/10 text-primary px-4 py-2 rounded-full">
+                                <i class="fa fa-check-circle mr-2"></i> 低资源占用
+                            </div>
+                            <div class="flex items-center bg-primary/10 text-primary px-4 py-2 rounded-full">
+                                <i class="fa fa-check-circle mr-2"></i> 稳定运行
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 下载区域 -->
+    <section id="download" class="py-20 relative">
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-3xl md:text-4xl font-bold mb-6 text-dark">Dongci player</h2>
+                <p class="text-xl text-gray-600 mb-10">现在下载，免费听上万首音乐！</p>
+                
+                <div class="bg-white rounded-2xl shadow-xl p-8 md:p-12 mb-12">
+                    <div class="flex flex-col md:flex-row justify-center gap-6 mb-8">
+                        <a href="https://share.feijipan.com/s/qaC1deSm" class="flex items-center justify-center bg-dark hover:bg-gray-800 text-white px-8 py-4 rounded-xl transition-all duration-300 w-full md:w-auto">
+                            <i class="fa fa-windows text-2xl mr-3"></i>
+                            <div class="text-left">
+                                <div class="text-sm opacity-80">下载适用于</div>
+                                <div class="font-semibold">Windows</div>
+                            </div>
+                        </a>
+                        
+                        <a href="https://share.feijipan.com/s/qaC1deSm" class="flex items-center justify-center bg-dark hover:bg-gray-800 text-white px-8 py-4 rounded-xl transition-all duration-300 w-full md:w-auto">
+                            <i class="fa fa-apple text-2xl mr-3"></i>
+                            <div class="text-left">
+                                <div class="text-sm opacity-80">下载适用于</div>
+                                <div class="font-semibold">macOS</div>
+                            </div>
+                        </a>
+                    </div>
+                    
+                    <p class="text-gray-500 text-sm">
+                        最新版本：v2025.08.29a | 更新日期：2025-08-29 | 大小：70.8MB
+                    </p>
+                </div>
+                
+                <div class="mb-10">
+                    <h3 class="text-xl font-semibold mb-4 text-dark">相关链接</h3>
+                    <div class="flex flex-col sm:flex-row justify-center gap-4">
+                        <a href="https://xiaodoudin.github.io/iqon" class="text-primary hover:text-secondary transition-colors duration-300 flex items-center">
+                            <i class="fa fa-link mr-2"></i> IQON
+                        </a>
+                        <a href="https://xiaodoudin.github.io/aqua-Chat" class="text-primary hover:text-secondary transition-colors duration-300 flex items-center">
+                            <i class="fa fa-link mr-2"></i> Aqua CT
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <p class="text-gray-500 mb-2">开发：浅_酱_(半心猫梦浅)</p>
+                    <p class="text-gray-500 text-sm mt-2">请勿盗版和仿制或攻击地球</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 页脚 -->
+    <footer class="py-8 bg-dark text-white/70 text-center text-sm">
+        <div class="container mx-auto px-4">
+            <p>本软件是一款非盈利性在线音乐播放器，仅供学习交流聆听使用，所有音乐版权归原作者所有，请勿用于商业用途</p>
+            <p class="mt-2">如有侵权请联系删除，Emile：menqian-qqyx@qq.com  QQ：2750078580  哔哩哔哩：@浅_酱_  抖音：@半心猫梦浅</p>
+            <p class="mt-2">©2022-2025 半心猫梦浅 所有权利保留 | Banxin CAT All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <!-- 回到顶部按钮 -->
+    <button id="backToTop" class="fixed bottom-8 right-8 bg-primary hover:bg-secondary text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 opacity-0 invisible">
+        <i class="fa fa-arrow-up"></i>
+    </button>
+    
+    <script>
+        // 回到顶部按钮
+        const backToTopBtn = document.getElementById('backToTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopBtn.classList.remove('opacity-0', 'invisible');
+                backToTopBtn.classList.add('opacity-100', 'visible');
+            } else {
+                backToTopBtn.classList.remove('opacity-100', 'visible');
+                backToTopBtn.classList.add('opacity-0', 'invisible');
+            }
+            
+            // 导航栏滚动效果
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.classList.add('py-2', 'shadow');
+                nav.classList.remove('py-4');
+            } else {
+                nav.classList.add('py-4');
+                nav.classList.remove('py-2', 'shadow');
+            }
+        });
+        
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // 背景圆环动画
+        const circles = document.querySelectorAll('.circle');
+        circles.forEach((circle, index) => {
+            circle.style.animation = `pulse ${5 + index * 2}s infinite ease-in-out`;
+        });
+    </script>
+</body>
+</html>
+    
